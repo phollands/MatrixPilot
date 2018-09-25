@@ -253,8 +253,7 @@ inline void read_accel(void)
 //	accelEarthFiltered[2].WW += ((((int32_t)accelEarth[2])<<16) - accelEarthFiltered[2].WW)>>5;
     
     // Rotate accelEarth[] back into the plane reference, for use with ChuckIt plane ]
-    MatrixTranspose(3, 3, rmat_transpose, rmat);
-    MatrixMultiply(3, 3, 1, accel_vector_plane, rmat_transpose, accelEarth);
+    MatrixMultiply(3, 3, 1, accel_vector_plane, rmat, accelEarth);
 }
 
 void udb_callback_read_sensors(void)
