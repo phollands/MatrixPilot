@@ -152,12 +152,23 @@ void dcm_heartbeat_callback(void)
 			mavlink_output_40hz();
 		}
 #endif // (USE_MAVLINK == 1)
-#if (SERIAL_OUTPUT_FORMAT != SERIAL_NONE)
+        
+#if (SERIAL_OUTPUT_FORMAT == SERIAL_DEBUG )
+        if (udb_pulse_counter % (HEARTBEAT_HZ/8) == 0)
+		{
+			telemetry_output_8hz();
+		}
+#elif (SERIAL_OUTPUT_FORMAT == SERIAL_IMU_DUMP )
+        if (udb_pulse_counter % (HEARTBEAT_HZ/40) == 0)
+		{
+			telemetry_output_40hz();
+		}
+#elif (SERIAL_OUTPUT_FORMAT != SERIAL_NONE)
 		// Send telemetry updates at 8hz
-		if (udb_pulse_counter % (HEARTBEAT_HZ/40) == 0)
+		if (udb_pulse_counter % (HEARTBEAT_HZ/8) == 0)
 		{
 // RobD			flight_state_8hz();
-			telemetry_output_40hz();
+			telemetry_output_8hz();
 		}
 #endif // (SERIAL_OUTPUT_FORMAT != SERIAL_NONE)
 	}

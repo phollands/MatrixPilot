@@ -97,6 +97,7 @@ void save_altitudeCntrlVariable(void);
 #define SERIAL_CAM_TRACK      8     // Output Location in a format usable by a 2nd UDB to target its camera at this plane
 #define SERIAL_MAVLINK        9     // The Micro Air Vehicle Link protocol from the PixHawk Project
 #define SERIAL_MAG_CALIBRATE 10     // Used to calibrate and report static magnetometer offsets
+#define SERIAL_IMU_DUMP      11     // Designed for 40Hz dump of IMU internal sensor info and low level calculations
 
 
 #include "gain_variables.h"

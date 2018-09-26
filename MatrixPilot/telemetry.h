@@ -22,6 +22,7 @@
 
 void telemetry_init(void);
 void telemetry_restart(void);
+void telemetry_output_8hz(void);
 void telemetry_output_40hz(void);
 
 int16_t udb_serial_callback_get_byte_to_send(void);
