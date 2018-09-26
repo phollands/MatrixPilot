@@ -63,6 +63,8 @@ void read_accel(void);
 // holding the UDB very still.
 void udb_callback_read_sensors(void);       // Callback
 
-extern uint16_t return_accel_vector_plane_xy(void);
+int16_t acceleration_plane_x(void);
+int16_t acceleration_plane_y(void);
+int16_t acceleration_plane_z(void);
 
 #endif // RMAT_H

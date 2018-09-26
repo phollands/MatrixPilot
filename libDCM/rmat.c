@@ -128,7 +128,6 @@ static fractional gravity_vector_plane[] = { 0, 0, GRAVITY };
 int16_t aero_force[] = { 0 , 0 , -GRAVITY };
 #endif
 fractional accel_vector_plane[] = { 0, 0, 0 };
-uint16_t return_accel_vector_plane_xy(void);
 
 
 // horizontal velocity over ground, as measured by GPS (Vz = 0)
@@ -147,15 +146,19 @@ fractional dirOverGndHrmat[] = { 0, RMAX, 0 };
 static fractional errorRP[] = { 0, 0, 0 };
 static fractional errorYawground[] = { 0, 0, 0 };
 static fractional errorYawplane[]  = { 0, 0, 0 };
-fractional rmat_transpose[]    = { RMAX, 0, 0, 0, RMAX, 0, 0, 0, RMAX };
+//fractional rmat_transpose[]    = { RMAX, 0, 0, 0, RMAX, 0, 0, 0, RMAX };
 
-uint16_t return_accel_vector_plane_xy(void)
+int16_t acceleration_plane_x(void)
 {
-    vect2_16t accel_vector_in_xy;
-    accel_vector_in_xy.x = accel_vector_plane[0];
-    accel_vector_in_xy.y = accel_vector_plane[1];
-    return(vect2_16_mag(&accel_vector_in_xy));    
-    //return accel_vector_plane[1]; // Not working well. New rmat init creating an issue ?
+    return(accel_vector_plane[0]);
+}
+int16_t acceleration_plane_y(void)
+{
+    return(accel_vector_plane[1]);
+}
+int16_t acceleration_plane_z(void)
+{
+    return(accel_vector_plane[2]);
 }
 
 
@@ -206,6 +209,7 @@ static inline void read_gyros(void)
 
 inline void read_accel(void)
 {
+    fractional accelEarth_xz_signs_switched[] = { 0, 0, 0 };
 #if (HILSIM == 1)
 	HILSIM_set_gplane(gplane);
 #else
@@ -253,7 +257,11 @@ inline void read_accel(void)
 //	accelEarthFiltered[2].WW += ((((int32_t)accelEarth[2])<<16) - accelEarthFiltered[2].WW)>>5;
     
     // Rotate accelEarth[] back into the plane reference, for use with ChuckIt plane ]
-    MatrixMultiply(3, 3, 1, accel_vector_plane, rmat, accelEarth);
+    // NB: To DO: re-account for change of signs in x and z axis. (Beforehand.)
+    accelEarth_xz_signs_switched[0] = -accelEarth[0];
+    accelEarth_xz_signs_switched[1] =  accelEarth[1];
+    accelEarth_xz_signs_switched[2] = -accelEarth[2];
+    MatrixMultiply(3, 3, 1, accel_vector_plane, rmat, accelEarth_xz_signs_switched);
     accel_vector_plane[0] = accel_vector_plane[0] << 1;
     accel_vector_plane[1] = accel_vector_plane[1] << 1;
     accel_vector_plane[2] = accel_vector_plane[2] << 1;

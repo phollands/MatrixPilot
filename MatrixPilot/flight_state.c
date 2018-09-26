@@ -173,7 +173,7 @@ static int16_t cruise_timer_2 = 0;
             (gravity_axis_at_startup == GRAVITY_X_NEGATIVE))
         {
             led_on(LED_GREEN);
-            if (return_accel_vector_plane_xy() > GRAVITY / 2)
+            if (abs(acceleration_plane_y()) > GRAVITY / 2)
             {
                 flight_mode = PLANE_LAUNCHED ;
                 udb_pwTrim[ELEVATOR_INPUT_CHANNEL] -= FLIGHT_CLIMB_TRIM_DELTA;
