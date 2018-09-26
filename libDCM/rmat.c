@@ -254,6 +254,9 @@ inline void read_accel(void)
     
     // Rotate accelEarth[] back into the plane reference, for use with ChuckIt plane ]
     MatrixMultiply(3, 3, 1, accel_vector_plane, rmat, accelEarth);
+    accel_vector_plane[0] = accel_vector_plane[0] << 1;
+    accel_vector_plane[1] = accel_vector_plane[1] << 1;
+    accel_vector_plane[2] = accel_vector_plane[2] << 1;
 }
 
 void udb_callback_read_sensors(void)
