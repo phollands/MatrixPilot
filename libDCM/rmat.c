@@ -258,9 +258,9 @@ inline void read_accel(void)
     
     // Rotate accelEarth[] back into the plane reference, for use with ChuckIt plane ]
     // NB: To DO: re-account for change of signs in x and z axis. (Beforehand.)
-    accelEarth_xz_signs_switched[0] = -accelEarth[0];
-    accelEarth_xz_signs_switched[1] =  accelEarth[1];
-    accelEarth_xz_signs_switched[2] = -accelEarth[2];
+    accelEarth_xz_signs_switched[0] =  accelEarth[0];
+    accelEarth_xz_signs_switched[1] = -accelEarth[1];
+    accelEarth_xz_signs_switched[2] =  accelEarth[2];
     MatrixMultiply(3, 3, 1, accel_vector_plane, rmat, accelEarth_xz_signs_switched);
     accel_vector_plane[0] = accel_vector_plane[0] << 1;
     accel_vector_plane[1] = accel_vector_plane[1] << 1;
