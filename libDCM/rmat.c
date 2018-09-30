@@ -515,15 +515,15 @@ static void PI_feedback(void)
 		kpyaw = KPYAW;
 		kprollpitch = KPROLLPITCH;
 	}
-	else if (spin_rate < ((uint16_t)(500.0 * DEGPERSEC)))
-	{
-		kpyaw = ((uint16_t)((KPYAW * 8.0) / (50.0 * DEGPERSEC))) * (spin_rate >> 3);
-		kprollpitch = ((uint16_t)((KPROLLPITCH * 8.0) / (50.0 * DEGPERSEC))) * (spin_rate >> 3);
-	}
+	//else if (spin_rate < ((uint16_t)(500.0 * DEGPERSEC)))
+	//{
+	//	kpyaw = ((uint16_t)((KPYAW * 8.0) / (50.0 * DEGPERSEC))) * (spin_rate >> 3);
+	//	kprollpitch = ((uint16_t)((KPROLLPITCH * 8.0) / (50.0 * DEGPERSEC))) * (spin_rate >> 3);
+	//}
 	else
 	{
-		kpyaw = (int16_t)(10.0 * KPYAW);
-		kprollpitch = (int16_t)(10.0 * KPROLLPITCH);
+		kpyaw = 0; // (int16_t)(10.0 * KPYAW);
+		kprollpitch = 0; //(int16_t)(10.0 * KPROLLPITCH);
 	}
 	VectorScale(3, omegacorrP, errorYawplane, kpyaw);   // Scale gain = 2
 	VectorScale(3, errorRPScaled, errorRP, kprollpitch);// Scale gain = 2
