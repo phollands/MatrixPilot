@@ -158,7 +158,7 @@ void flightState(void)
 #define FLIGHT_TURN_TIMER           160 
 #define FLIGHT_DESCEND_TIMER        800  // 20 seconds
     
-#define FLIGHT_CLIMB_TRIM_DELTA     100
+#define FLIGHT_CLIMB_TRIM_DELTA     200
 #define FLIGHT_TURN_RATE_UDB_UNITS 1000  
 #define FLIGHT_DESCEND_TRIM_DELTA   100
     
