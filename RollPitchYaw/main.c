@@ -30,6 +30,7 @@
 #include "../libUDB/serialIO.h"
 #include "../libUDB/servoOut.h"
 #include "../libUDB/ADchannel.h"
+#include "../libUDB/mpu6000.h" 
 
 // Used for serial debug output
 #include <stdio.h>
