@@ -92,6 +92,8 @@ fractional rmat[] = { RMAX, 0, 0, 0, 0, RMAX, 0, -RMAX, 0 };
 fractional rmat[] = { RMAX, 0, 0, 0, RMAX, 0, 0, 0, RMAX };
 #endif
 
+static fractional rmat_transpose[9];
+
 // rup is the rotational update matrix.
 // At each time step, the new rmat is equal to the old one, multiplied by rup.
 //fractional rup[] = { RMAX, 0, 0, 0, RMAX, 0, 0, 0, RMAX };
@@ -143,7 +145,7 @@ fractional dirOverGndHrmat[] = { 0, RMAX, 0 };
 //fractional rbuff[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // vector buffer
-static fractional errorRP[] = { 0, 0, 0 };
+fractional errorRP[] = { 0, 0, 0 };
 static fractional errorYawground[] = { 0, 0, 0 };
 static fractional errorYawplane[]  = { 0, 0, 0 };
 //fractional rmat_transpose[]    = { RMAX, 0, 0, 0, RMAX, 0, 0, 0, RMAX };
@@ -261,7 +263,8 @@ inline void read_accel(void)
     accelEarth_xz_signs_switched[0] =  accelEarth[0];
     accelEarth_xz_signs_switched[1] = -accelEarth[1];
     accelEarth_xz_signs_switched[2] =  accelEarth[2];
-    MatrixMultiply(3, 3, 1, accel_vector_plane, rmat, accelEarth_xz_signs_switched);
+    MatrixTranspose(3, 3, rmat_transpose, rmat);
+    MatrixMultiply(3, 3, 1, accel_vector_plane, rmat_transpose, accelEarth_xz_signs_switched);
     accel_vector_plane[0] = accel_vector_plane[0] << 1;
     accel_vector_plane[1] = accel_vector_plane[1] << 1;
     accel_vector_plane[2] = accel_vector_plane[2] << 1;
