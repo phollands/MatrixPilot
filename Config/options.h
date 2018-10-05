@@ -568,12 +568,12 @@
 
 #define CUSTOM_OFFSETS
 // The Following are for the UDB5mini in Solius measured Friday 14th August 2018
-#define XACCEL_OFFSET  (66)  // adjusted for 16g ( 242) //( 166) //( 154 )
-#define YACCEL_OFFSET  (9)   // adjusted for 16g ( -10) //(  66) //(  86 )
-#define ZACCEL_OFFSET  (-202) // adjusted for 16g (-788) //(-803) //(-777 )
-#define XRATE_OFFSET   (-33) // adjusted for 2000 deg / sec(-123) //(-119) //(-121 )  
-#define YRATE_OFFSET   (3)   // adjusted for 2000 deg / sec(  16) //(  15) //(  18 ) 
-#define ZRATE_OFFSET   (-8)  // adjusted for 2000 deg / sec( -28) //( -34) //( -28 ) 
+#define XACCEL_OFFSET  (46)   //(66)  // adjusted for 16g ( 242) //( 166) //( 154 )
+#define YACCEL_OFFSET  (27)   //(9)   // adjusted for 16g ( -10) //(  66) //(  86 )
+#define ZACCEL_OFFSET  (-209) //(-202) // adjusted for 16g (-788) //(-803) //(-777 )
+#define XRATE_OFFSET   (-27)  //(-33) // adjusted for 2000 deg / sec(-123) //(-119) //(-121 )  
+#define YRATE_OFFSET   (4)    //(3)   // adjusted for 2000 deg / sec(  16) //(  15) //(  18 ) 
+#define ZRATE_OFFSET   (-8)   //(-8)  // adjusted for 2000 deg / sec( -28) //( -34) //( -28 ) 
 
 // Rudder/Yaw Control Gains
 // YAWKP_RUDDER is the proportional feedback gain for rudder control of yaw orientation.
