@@ -511,7 +511,7 @@ void telemetry_output_8hz(void)
 void telemetry_output_40hz(void)
 {
    serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                         \
-           aero_force[0], aero_force[1], aero_force[2],                             \
+           -aero_force[0], -aero_force[1], -aero_force[2],                             \
            acceleration_plane_x(), acceleration_plane_y(), acceleration_plane_z(),  \
            errorRP[0], errorRP[1], errorRP[2],                                      \
            omegaAccum[0], omegaAccum[1], omegaAccum[2]);
