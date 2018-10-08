@@ -221,8 +221,8 @@ void helicalTurnCntrl(void)
 	state_flags._.pitch_feedback = 1; // turn on stabilization
 	airSpeed = 981; // for testing purposes, an airspeed is needed
 #else
-	//airSpeed = air_speed_3DIMU;
-    airSpeed = 700;  // cm / sec approximation for Chuckit based on Multiplex Mini Solius
+	// airSpeed = air_speed_3DIMU;
+    airSpeed = 700; // PDH special for chuckit
 	if (airSpeed < TURN_CALC_MINIMUM_AIRSPEED) airSpeed = TURN_CALC_MINIMUM_AIRSPEED;
 #endif
 
