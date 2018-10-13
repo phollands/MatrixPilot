@@ -46,6 +46,8 @@ void udb_magnetometer_callback(void);
 extern fractional rmat[];                   //  gyro rotation vector:
 extern fractional omegaAccum[];             //  accumulator for computing adjusted omega:
 extern fractional omegagyro[];
+extern fractional omegacorrI[];
+extern fractional omegacorrP[];
 extern fractional accelEarth[];             //  acceleration, as measured in GPS earth coordinate system
 extern fractional gplane[];
 extern int16_t aero_force[];

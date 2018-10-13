@@ -103,8 +103,8 @@ fractional omegagyro[] = { 0, 0, 0 };
 static fractional omega[] = { 0, 0, 0 };
 
 // gyro correction vectors:
-static fractional omegacorrP[] = { 0, 0, 0 };
-static fractional omegacorrI[] = { 0, 0, 0 };
+fractional omegacorrP[] = { 0, 0, 0 };
+fractional omegacorrI[] = { 0, 0, 0 };
 
 // acceleration, as measured in GPS earth coordinate system
 fractional accelEarth[] = { 0, 0, 0 };
