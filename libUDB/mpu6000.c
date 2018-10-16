@@ -98,7 +98,8 @@ void MPU6000_init16(callback_fptr_t fptr)
 	writeMPUSPIreg16(MPUREG_SMPLRT_DIV, 4); // Sample rate = 200Hz  Fsample= 1Khz/(N+1) = 200Hz
 
 	// scaling & DLPF
-	writeMPUSPIreg16(MPUREG_CONFIG, BITS_DLPF_CFG_42HZ);
+	// This is normal configuration // writeMPUSPIreg16(MPUREG_CONFIG, BITS_DLPF_CFG_42HZ);
+    writeMPUSPIreg16(MPUREG_CONFIG, BITS_DLPF_CFG_188HZ ); // Experiment for ChuckIt with fast Discus Throw, No Motor
 
 	writeMPUSPIreg16(MPUREG_GYRO_CONFIG, BITS_FS_2000DPS);  // Gyro scale 2000º/s
 //	writeMPUSPIreg16(MPUREG_GYRO_CONFIG, BITS_FS_500DPS); // Gyro scale 500º/s
