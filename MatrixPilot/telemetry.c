@@ -508,14 +508,29 @@ void telemetry_output_8hz(void)
 }
 
 #elif (SERIAL_OUTPUT_FORMAT == SERIAL_IMU_DUMP)
+
+static uint8_t  wait_time = 1 * 40; //1 second at 40Hz to let clocks stabilize
+
 void telemetry_output_40hz(void)
 {
-   serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                         \
+   if (wait_time > 1)
+   {
+       wait_time-- ;
+   }
+   else if (wait_time == 1)
+   {
+       serial_output("Sx,Sy,Sz,Apx,Apy,Apz,Px,Py,Pz,Ix,Iy,Iz,Wx,Wy,Wz\r\n");
+       wait_time = 0;
+   }
+   else
+   {
+        serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                         \
            -aero_force[0], -aero_force[1], -aero_force[2],                          \
            acceleration_plane_x(), acceleration_plane_y(), acceleration_plane_z(),  \
            omegacorrP[0], omegacorrP[1], omegacorrP[2],                             \
            omegacorrI[0], omegacorrI[1], omegacorrI[2],                             \
-           omegaAccum[0], omegaAccum[1], omegaAccum[2]);
+           omegagyro[0], omegagyro[1], omegagyro[2]);
+   }
 }
 #elif (SERIAL_OUTPUT_FORMAT == SERIAL_ARDUSTATION)
 
