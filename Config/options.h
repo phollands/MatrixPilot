@@ -529,7 +529,7 @@
 // YAWKD_AILERON is the derivative feedback gain for ailerons in response to yaw rotation.
 // use it only if there is no rudder.
 #define ROLLKP                              0.20
-#define ROLLKD                              0.05
+#define ROLLKD                              0.00
 #define YAWKP_AILERON                       0.00
 #define YAWKD_AILERON                       0.00
 
