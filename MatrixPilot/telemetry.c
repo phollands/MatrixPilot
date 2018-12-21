@@ -519,15 +519,16 @@ void telemetry_output_40hz(void)
    }
    else if (wait_time == 1)
    {
-       serial_output("Sx,Sy,Sz,Apx,Apy,Apz,rmat6,rmat7,Wx,Wy,Wz\r\n");
+       serial_output("Sx,AIL,ELEV,Apx,Apy,Apz,rmat6,rmat7,Wx,Wy,Wz\r\n");
        wait_time = 0;
    }
    else
    {
-        serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                    \
-           -aero_force[0], -aero_force[1], -aero_force[2],                          \
-           acceleration_plane_x(), acceleration_plane_y(), acceleration_plane_z(),  \
-           rmat[6],rmat[7],                                                         \
+        serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                     \
+           -aero_force[0],                                                        \
+           udb_pwOut[AILERON_OUTPUT_CHANNEL], udb_pwOut[AILERON_OUTPUT_CHANNEL],  \
+           acceleration_plane_x(), acceleration_plane_y(), acceleration_plane_z(),\
+           rmat[6],rmat[7],                                                       \
            omegagyro[0], omegagyro[1], omegagyro[2]);
    }
 }
