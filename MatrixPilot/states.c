@@ -49,11 +49,14 @@ static uint8_t counter = 0;
 #define WAGGLE_SIZE 300
 
 static int16_t calib_timer = CALIB_PAUSE;
+#if (GPS_TYPE != GPS_NONE)
 static int16_t standby_timer = STANDBY_PAUSE;
-
+#endif
 static void startS(void);
 static void calibrateS(void);
+#if (GPS_TYPE != GPS_NONE)
 static void acquiringS(void);
+#endif
 static void manualS(void);
 static void stabilizedS(void);
 static void waypointS(void);
@@ -181,6 +184,7 @@ static void ent_calibrateS(void)
 	led_on(LED_RED); // turn on mode led
 }
 
+#if (GPS_TYPE != GPS_NONE)
 // Acquire state is used to wait for the GPS to achieve lock.
 static void ent_acquiringS(void)
 {
@@ -210,6 +214,7 @@ static void ent_acquiringS(void)
 	standby_timer = STANDBY_PAUSE;
 	led_off(LED_RED);
 }
+#endif
 
 //	Manual state is used for direct pass-through control from radio to servos.
 static void ent_manualS(void)
@@ -358,6 +363,7 @@ static void calibrateS(void)
 	}
 }
 
+#if (GPS_TYPE != GPS_NONE)
 static void acquiringS(void)
 {
 #if (AIRFRAME_TYPE == AIRFRAME_HELI)
@@ -408,6 +414,7 @@ static void acquiringS(void)
 		waggle = 0;
 	}
 }
+#endif
 
 #ifdef CATAPULT_LAUNCH_ENABLE
 boolean launch_enabled(void)
