@@ -71,7 +71,7 @@ void calculate_height_above_ground_level(void)
 		range_to_target = accum._.W1;
 		// RMAT 8 is the cosine of the tilt of the plane in pitch and roll	;
 		cos_pitch_roll = rmat[8]; // rmat[8] can change in another thread of execution
-		if (cos_pitch_roll < 8192) // tilt >  45 degrees
+		if (cos_pitch_roll < 8192) // tilt >  60 degrees
 		{
 			height_above_ground_level = OUT_OF_RANGE_DISTANCE;
             return;
