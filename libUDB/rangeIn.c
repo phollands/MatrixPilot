@@ -77,7 +77,7 @@ void udb_init_ranger(void)
     // Timer Calculations: Lidar (Garmin Lidar 3LiteHP)
     // Lidar PWM Pulses are 10 microseconds in width for each 1 centimeters of detected range
     // Expect a maximum range of 40 meters from published specs. 
-    // maximum cpu clock pulses of a detected range will be will be 16000000 * 0.04 which is 640000 cpu clock ticks.
+    // maximum cpu clock pulses of a detected range will be will be 16,000,000 * 0.04 which is 64,000 cpu clock ticks.
     // If we pre-scale that by 64 then we will have max timer ticks of 10,000 .
     // 1 centimeter will be 10,000 / (40*100) ticks which is 2.5 timer ticks / centimeter.
 
