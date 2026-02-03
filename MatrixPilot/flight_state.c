@@ -62,18 +62,18 @@ static void update_in_flight(void)
 	//   flight_mode = PLANE_ON_GROUND -> if moved 7 meters and throttle > 50% -> PLANE_IN_FLIGHT
 
 	int32_t lat = lat_gps.WW >> 6;  // cut off unecessary digits, it's about 7 meters
-	int32_t log = lat_gps.WW >> 6;
+	int32_t lon = lon_gps.WW >> 6;
 	int16_t throttleIn = udb_pwIn[THROTTLE_INPUT_CHANNEL];
 
 //	if (flight_mode == PLANE_ON_GROUND || flight_mode == PLANE_IN_FLIGHT)   // we are on ground before or after flight
 
 	if (flight_mode == PLANE_ON_GROUND)                 // we are on ground before or after flight
 	{                                                   // we need 7 meters of movement
-		if (last_lon != log && last_lat != lat)         // we are moving 
+		if (last_lon != lon && last_lat != lat)         // we are moving 
 		{
 			if (throttleIn < MID_THROTTLE)              // but without throttle
 			{
-				last_lon = log;                         // save
+				last_lon = lon;                         // save
 				last_lat = lat;
 			}
 			else                                        // with throttle so we are flying
@@ -85,9 +85,9 @@ static void update_in_flight(void)
 	}
 	else if (flight_mode == PLANE_IN_FLIGHT)
 	{
-		if (last_lon != log && last_lat != lat)         // we are moving
+		if (last_lon != lon && last_lat != lat)         // we are moving
 		{
-			last_lon = log;                             // save
+			last_lon = lon;                             // save
 			last_lat = lat;
 			counter = 0;
 		}
