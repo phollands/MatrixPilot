@@ -142,6 +142,9 @@
 #define MPU6000_66HZ                2
 #define MPU6000_50HZ                3
 
+#define WHOAMI_MPU_6000			0x68
+#define WHOAMI_ICM_20689		0x98
+#define WHOAMI_ICM_20600		0x11
 
 void MPU6000_print(void);
 
