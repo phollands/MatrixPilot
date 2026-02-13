@@ -526,7 +526,7 @@ void telemetry_output_40hz(void)
    {
         serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                     \
            -aero_force[0],                                                        \
-           udb_pwOut[AILERON_OUTPUT_CHANNEL], udb_pwOut[AILERON_OUTPUT_CHANNEL],  \
+           udb_pwOut[AILERON_OUTPUT_CHANNEL], udb_pwOut[ELEVATOR_OUTPUT_CHANNEL],  \
            acceleration_plane_x(), acceleration_plane_y(), acceleration_plane_z(),\
            rmat[6],rmat[7],                                                       \
            omegagyro[0], omegagyro[1], omegagyro[2]);
