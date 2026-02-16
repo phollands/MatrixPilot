@@ -98,11 +98,6 @@ void MPU6000_init16(callback_fptr_t fptr)
 	is_ICM_20689 = (mpu_whoami == WHOAMI_ICM_20689);
 
 	// Disable I2C bus (recommended on datasheet)
-	 if (mpu_whoami != WHOAMI_ICM_20600) {
-    	writeMPUSPIreg16(MPUREG_USER_CTRL, BIT_I2C_IF_DIS);
-	}  
-
-	// Disable I2C bus (recommended on datasheet)
 	writeMPUSPIreg16(MPUREG_USER_CTRL, BIT_I2C_IF_DIS);
 
 	// SAMPLE RATE
