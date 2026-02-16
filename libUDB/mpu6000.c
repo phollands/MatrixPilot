@@ -100,16 +100,7 @@ void MPU6000_init16(callback_fptr_t fptr)
 	// Disable I2C bus (recommended on datasheet)
 	 if (mpu_whoami != WHOAMI_ICM_20600) {
     	writeMPUSPIreg16(MPUREG_USER_CTRL, BIT_I2C_IF_DIS);
-	}
-    
-    	if (is_ICM_20689) {
-//	if (mpu_whoami == WHOAMI_ICM_20689 || mpu_whoami == WHOAMI_ICM_20600) {
-		// Disable I2C communications on the ICM_20689
-		uint8_t v = readMPUSPIreg16(MPUREG_INT_PIN_CFG) | BIT_INT_RD_CLEAR | BIT_LATCH_INT_EN;
-		v &= BIT_I2C_BYPASS_EN;
-		writeMPUSPIreg16(MPUREG_INT_PIN_CFG, v);
-	}
-    
+	}  
 
 	// Disable I2C bus (recommended on datasheet)
 	writeMPUSPIreg16(MPUREG_USER_CTRL, BIT_I2C_IF_DIS);
