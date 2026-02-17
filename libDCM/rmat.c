@@ -112,7 +112,7 @@ fractional accelEarth[] = { 0, 0, 0 };
 //union longww accelEarthFiltered[] = { { 0 }, { 0 },  { 0 } };
 
 // correction vector integrators;
-static union longww gyroCorrectionIntegral[] =  { { 0 }, { 0 },  { 0 } };
+union longww gyroCorrectionIntegral[] =  { { 0 }, { 0 },  { 0 } };
 
 // accumulator for computing adjusted omega:
 fractional omegaAccum[] = { 0, 0, 0 };

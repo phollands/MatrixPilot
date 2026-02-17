@@ -509,8 +509,8 @@ void telemetry_output_8hz(void)
 
 #elif (SERIAL_OUTPUT_FORMAT == SERIAL_IMU_DUMP)
 
-static uint8_t  wait_time = 1 * 40; //1 second at 40Hz to let clocks stabilize
-
+static uint16_t  wait_time = 10 * 40; //10 secondS at 40Hz to let clocks stabilize
+extern union longww gyroCorrectionIntegral[] ;
 void telemetry_output_40hz(void)
 {
    if (wait_time > 1)
@@ -519,17 +519,21 @@ void telemetry_output_40hz(void)
    }
    else if (wait_time == 1)
    {
-       serial_output("Sx,AIL,ELEV,Apx,Apy,Apz,rmat6,rmat7,Wx,Wy,Wz\r\n");
+       serial_output("Sx,AIL,ELEV,Apx,Apy,Apz,rmat6,rmat7,Wx,Wy,Wz,WIx,WIy,WIz\r\n");
        wait_time = 0;
    }
    else
    {
-        serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                     \
+        serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                     \
            -aero_force[0],                                                        \
            udb_pwOut[AILERON_OUTPUT_CHANNEL], udb_pwOut[ELEVATOR_OUTPUT_CHANNEL],  \
            acceleration_plane_x(), acceleration_plane_y(), acceleration_plane_z(),\
            rmat[6],rmat[7],                                                       \
-           omegagyro[0], omegagyro[1], omegagyro[2]);
+           omegagyro[0], omegagyro[1], omegagyro[2] ,
+           gyroCorrectionIntegral[0]._.W1 ,
+           gyroCorrectionIntegral[1]._.W1 ,
+           gyroCorrectionIntegral[2]._.W1              
+                );
    }
 }
 #elif (SERIAL_OUTPUT_FORMAT == SERIAL_ARDUSTATION)
