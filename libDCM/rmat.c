@@ -55,9 +55,11 @@ static fractional spin_axis[] = { 0, 0, RMAX };
 
 #if (BOARD_TYPE == AUAV3_BOARD || BOARD_TYPE == UDB5_BOARD || BOARD_TYPE == PX4_BOARD)
 // modified gains for MPU6000
-#define KPROLLPITCH (ACCEL_RANGE * 1280/3)
-#define KIROLLPITCH ((ACCEL_RANGE / 2 ) * 3400 / (HEARTBEAT_HZ / 2)) // divide by 2 prevents compiler warning on integer overflow for 16g setting
-
+//#define KPROLLPITCH (ACCEL_RANGE * 1280/3)
+#define KPROLLPITCH 10000
+//#define KIROLLPITCH 3*((ACCEL_RANGE / 2 ) * 3400 / (HEARTBEAT_HZ / 2)) // divide by 2 prevents compiler warning on integer overflow for 16g setting
+//#define KIROLLPITCH 100
+#define KIROLLPITCH 0
 #elif (BOARD_TYPE == UDB4_BOARD)
 // Paul's gains for 6G accelerometers
 #define KPROLLPITCH (256*5)
@@ -67,9 +69,9 @@ static fractional spin_axis[] = { 0, 0, RMAX };
 #error Unsupported BOARD_TYPE
 #endif // BOARD_TYPE
 
-#define KPYAW 256*4
-//#define KIYAW 32
-#define KIYAW (1280/HEARTBEAT_HZ)
+#define KPYAW 0
+#define KIYAW 0
+// no yaw feedback with Chuck
 
 #define GYROSAT 15000
 // threshold at which gyros may be saturated
@@ -100,7 +102,7 @@ static fractional rmat_transpose[9];
 
 // gyro rotation vector:
 fractional omegagyro[] = { 0, 0, 0 };
-static fractional omega[] = { 0, 0, 0 };
+fractional omega[] = { 0, 0, 0 };
 
 // gyro correction vectors:
 fractional omegacorrP[] = { 0, 0, 0 };
@@ -146,8 +148,8 @@ fractional dirOverGndHrmat[] = { 0, RMAX, 0 };
 
 // vector buffer
 fractional errorRP[] = { 0, 0, 0 };
-static fractional errorYawground[] = { 0, 0, 0 };
-static fractional errorYawplane[]  = { 0, 0, 0 };
+fractional errorYawground[] = { 0, 0, 0 };
+fractional errorYawplane[]  = { 0, 0, 0 };
 //fractional rmat_transpose[]    = { RMAX, 0, 0, 0, RMAX, 0, 0, 0, RMAX };
 
 int16_t acceleration_plane_x(void)
@@ -476,16 +478,24 @@ static void normalize(void)
 	VectorAdd(3, &rmat[6], &rbuff[6], &rbuff[6]);
 }
 
+int16_t down_vector[3] ;
+int16_t errorRP_raw[3] ;
+
 static void roll_pitch_drift(void)
 {
-	VectorCross(errorRP, gravity_vector_plane, &rmat[6]);
+// note : this has been modified for Chuck branch    
+    vector3_normalize(down_vector,gplane);
+    
+	VectorCross(errorRP, down_vector, &rmat[6]);
+    VectorCross(errorRP_raw, down_vector, &rmat[6]);
+    
 //#ifdef CATAPULT_LAUNCH_ENABLE
 #define MAXIMUM_PITCH_ERROR ((fractional)(GRAVITY*0.25))
 	// the following is done to limit the pitch error during a catapult launch
 	// it has no effect during normal conditions, because acceleration
 	// compensated gravity_vector_plane is approximately aligned with rmat[6] vector
-	if (errorRP[0] >  MAXIMUM_PITCH_ERROR) errorRP[0] =  MAXIMUM_PITCH_ERROR;
-	if (errorRP[0] < -MAXIMUM_PITCH_ERROR) errorRP[0] = -MAXIMUM_PITCH_ERROR;
+	//if (errorRP[0] >  MAXIMUM_PITCH_ERROR) errorRP[0] =  MAXIMUM_PITCH_ERROR;
+	//if (errorRP[0] < -MAXIMUM_PITCH_ERROR) errorRP[0] = -MAXIMUM_PITCH_ERROR;
 //#endif // CATAPULT_LAUNCH_ENABLE
 }
 
@@ -520,45 +530,34 @@ static void PI_feedback(void)
 	int16_t kpyaw;
 	int16_t kprollpitch;
 
-	// boost the KPs at high spin rate, to compensate for increased error due to calibration error
-	// above 50 degrees/second, scale by rotation rate divided by 50
 
-	if (spin_rate < ((uint16_t)(50.0 * DEGPERSEC)))
 	{
 		kpyaw = KPYAW;
 		kprollpitch = KPROLLPITCH;
 	}
-	//else if (spin_rate < ((uint16_t)(500.0 * DEGPERSEC)))
-	//{
-	//	kpyaw = ((uint16_t)((KPYAW * 8.0) / (50.0 * DEGPERSEC))) * (spin_rate >> 3);
-	//	kprollpitch = ((uint16_t)((KPROLLPITCH * 8.0) / (50.0 * DEGPERSEC))) * (spin_rate >> 3);
-	//}
-	else
-	{
-		kpyaw = 0; // (int16_t)(10.0 * KPYAW);
-		kprollpitch = 0; //(int16_t)(10.0 * KPROLLPITCH);
-	}
-	VectorScale(3, omegacorrP, errorYawplane, kpyaw);   // Scale gain = 2
-	VectorScale(3, errorRPScaled, errorRP, kprollpitch);// Scale gain = 2
+	
+	VectorScale(3, omegacorrP, errorYawplane, 0);   // not used in Chuck
+	VectorScale(3, errorRPScaled, errorRP_raw, kprollpitch);// used in Chuck
 	VectorAdd(3, omegacorrP, omegacorrP, errorRPScaled);
-
+       
 	// turn off the offset integrator while spinning, it doesn't work in that case,
 	// and it only causes trouble.
 
-	if (spin_rate < ((uint16_t) (MAXIMUM_SPIN_DCM_INTEGRAL * DEGPERSEC)))
 	{
-		gyroCorrectionIntegral[0].WW += (__builtin_mulss(errorRP[0], KIROLLPITCH)>>3);
-		gyroCorrectionIntegral[1].WW += (__builtin_mulss(errorRP[1], KIROLLPITCH)>>3);
-		gyroCorrectionIntegral[2].WW += (__builtin_mulss(errorRP[2], KIROLLPITCH)>>3);
+		gyroCorrectionIntegral[0].WW += (__builtin_mulss(errorRP_raw[0], KIROLLPITCH)>>0);
+		gyroCorrectionIntegral[1].WW += (__builtin_mulss(errorRP_raw[1], KIROLLPITCH)>>0);
+		gyroCorrectionIntegral[2].WW += (__builtin_mulss(errorRP_raw[2], KIROLLPITCH)>>0);
 
-		gyroCorrectionIntegral[0].WW += (__builtin_mulss(errorYawplane[0], KIYAW)>>3);
-		gyroCorrectionIntegral[1].WW += (__builtin_mulss(errorYawplane[1], KIYAW)>>3);
-		gyroCorrectionIntegral[2].WW += (__builtin_mulss(errorYawplane[2], KIYAW)>>3);
+        // not used in Chuck
+        
+		//gyroCorrectionIntegral[0].WW += (__builtin_mulss(errorYawplane[0], KIYAW)>>6);
+		//gyroCorrectionIntegral[1].WW += (__builtin_mulss(errorYawplane[1], KIYAW)>>6);
+		//gyroCorrectionIntegral[2].WW += (__builtin_mulss(errorYawplane[2], KIYAW)>>6);
 	}
 
-	omegacorrI[0] = gyroCorrectionIntegral[0]._.W1>>3;
-	omegacorrI[1] = gyroCorrectionIntegral[1]._.W1>>3;
-	omegacorrI[2] = gyroCorrectionIntegral[2]._.W1>>3;
+	omegacorrI[0] = gyroCorrectionIntegral[0]._.W1>>6;
+	omegacorrI[1] = gyroCorrectionIntegral[1]._.W1>>6;
+	omegacorrI[2] = gyroCorrectionIntegral[2]._.W1>>6;
 }
 
 static uint16_t adjust_gyro_gain(uint16_t old_gain, int16_t gain_change)
