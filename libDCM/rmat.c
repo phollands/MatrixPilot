@@ -272,9 +272,28 @@ inline void read_accel(void)
     accel_vector_plane[2] = accel_vector_plane[2] << 1;
 }
 
+union longww omegagyro_filtered_pass_1[]= { { 0 }, { 0 },  { 0 } } ;
+union longww omegagyro_filtered_pass_2[]= { { 0 }, { 0 },  { 0 } } ;
+
+
+#define GYRO_FILTER_SHIFT 12
+
+void filter_gyros(void)
+{
+    union longww accum32 ;
+	accum32._.W1 = omegagyro[0] ;
+	accum32._.W0 = 0 ;
+	omegagyro_filtered_pass_1[0].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_1[0].WW )>>GYRO_FILTER_SHIFT) ;
+	accum32._.W1 = omegagyro[1] ;
+	omegagyro_filtered_pass_1[1].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_1[1].WW )>>GYRO_FILTER_SHIFT) ;
+	accum32._.W1 = omegagyro[2] ;
+	omegagyro_filtered_pass_1[2].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_1[2].WW )>>GYRO_FILTER_SHIFT) ;
+	}
+
 void udb_callback_read_sensors(void)
 {
 	read_gyros(); // record the average values for both DCM and for offset measurements
+    filter_gyros();
 	read_accel();
 }
 

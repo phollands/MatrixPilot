@@ -509,11 +509,12 @@ void telemetry_output_8hz(void)
 
 #elif (SERIAL_OUTPUT_FORMAT == SERIAL_IMU_DUMP)
 
-static uint16_t  wait_time = 20; //2 secondS at 10Hz to let clocks stabilize
+static uint16_t  wait_time = 20; //20 secondS at 10Hz to let clocks stabilize
 extern union longww gyroCorrectionIntegral[] ;
 extern int16_t errorYawplane[];
 extern int16_t omega[], omegaAccum[] , down_vector[] ;
 extern int16_t errorRP_raw[];
+extern union longww omegagyro_filtered_pass_1[];
 void telemetry_output_10hz(void)
 {
    if (wait_time > 1)
@@ -522,33 +523,27 @@ void telemetry_output_10hz(void)
    }
    else if (wait_time == 1)
    {
-       serial_output("Sx,AIL,ELEV,Gpx,Gpy,Gpz,rmat6,rmat7,rmat8,Wx,Wy,Wz,WIx,WIy,WIz,errRPx,errRPy,errRPz,dwnx,dwny,dwnz,Wadjx,Wadjy,Wadjz\r\n");
+       serial_output("Sx,AIL,ELEV,Gpx,Gpy,Gpz,rmat6,rmat7,rmat8,Wx,Wy,Wz,WIx,WIy,WIz,errRPx,errRPy,errRPz\r\n");
        wait_time = 0;
    }
    else
    {
-        serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                     \
+        serial_output("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r\n",                     \
            -aero_force[0],                                                        
            udb_pwOut[AILERON_OUTPUT_CHANNEL], udb_pwOut[ELEVATOR_OUTPUT_CHANNEL],  
            //acceleration_plane_x(), acceleration_plane_y(), acceleration_plane_z(),
            gplane[0],gplane[1],gplane[2],    
            rmat[6],rmat[7],rmat[8],                                                       
-           omega[0], omega[1], omega[2] ,
-           gyroCorrectionIntegral[0]._.W1 ,
-           gyroCorrectionIntegral[1]._.W1 ,
-           gyroCorrectionIntegral[2]._.W1 , 
+           omegagyro[0], omegagyro[1], omegagyro[2] ,
+                
+           omegagyro_filtered_pass_1[0]._.W1 ,
+           omegagyro_filtered_pass_1[1]._.W1 ,
+           omegagyro_filtered_pass_1[2]._.W1 , 
                 
                 errorRP_raw[0],
                 errorRP_raw[1],
-                errorRP_raw[2],
+                errorRP_raw[2]
                 
-                down_vector[0],
-                down_vector[1],
-                down_vector[2],
-                
-                omegaAccum[0],
-                omegaAccum[1],
-                omegaAccum[2]
                 
                 );
    }    
