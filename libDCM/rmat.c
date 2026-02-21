@@ -53,6 +53,8 @@ static fractional ggain[] =  { GGAIN, GGAIN, GGAIN };
 static uint16_t spin_rate = 0;
 static fractional spin_axis[] = { 0, 0, RMAX };
 
+boolean flight_ready = false ;
+
 #if (BOARD_TYPE == AUAV3_BOARD || BOARD_TYPE == UDB5_BOARD || BOARD_TYPE == PX4_BOARD)
 // modified gains for MPU6000
 //#define KPROLLPITCH (ACCEL_RANGE * 1280/3)
@@ -107,6 +109,9 @@ fractional omega[] = { 0, 0, 0 };
 // gyro correction vectors:
 fractional omegacorrP[] = { 0, 0, 0 };
 fractional omegacorrI[] = { 0, 0, 0 };
+
+union longww omegagyro_offset[]= { { 0 }, { 0 },  { 0 } } ;
+
 
 // acceleration, as measured in GPS earth coordinate system
 fractional accelEarth[] = { 0, 0, 0 };
@@ -195,9 +200,18 @@ static inline void read_gyros(void)
 //	omegagyro[1] = p_sim.BB;
 //	omegagyro[2] = r_sim.BB;
 #else
-	omegagyro[0] = XRATE_VALUE;
-	omegagyro[1] = YRATE_VALUE;
-	omegagyro[2] = ZRATE_VALUE;
+    if ( flight_ready == true )
+    {
+        omegagyro[0] = (XRATE_VALUE )- omegagyro_offset[0]._.W1;
+        omegagyro[1] = (YRATE_VALUE) - omegagyro_offset[1]._.W1;
+        omegagyro[2] = (ZRATE_VALUE) - omegagyro_offset[2]._.W1; 
+    }
+    else
+    {
+        omegagyro[0] = XRATE_VALUE;
+        omegagyro[1] = YRATE_VALUE;
+        omegagyro[2] = ZRATE_VALUE;
+    }
 #endif
 
 	spin_rate = vector3_mag(omegagyro[0], omegagyro[1], omegagyro[2]);
@@ -274,7 +288,6 @@ inline void read_accel(void)
 
 union longww omegagyro_filtered_pass_1[]= { { 0 }, { 0 },  { 0 } } ;
 union longww omegagyro_filtered_pass_2[]= { { 0 }, { 0 },  { 0 } } ;
-union longww omegagyro_offset[]= { { 0 }, { 0 },  { 0 } } ;
 
 #define MAX_OFFSET 100
 
@@ -286,14 +299,7 @@ int16_t saturate_omega( int16_t input )
     }
     else
     {
-       if (input >  MAX_OFFSET)
-       {
-           return MAX_OFFSET ;
-       }
-       else
-       {
-           return - MAX_OFFSET ;
-       }
+        return 0 ; // best strategy because chances are there is motion
     }
 }
 
@@ -324,11 +330,26 @@ void filter_gyros(void)
     
 }
 
+uint16_t preflight_timer = 12000 ;  // 60 seconds
+
 void udb_callback_read_sensors(void)
 {
-	read_gyros(); // record the average values for both DCM and for offset measurements
-    filter_gyros();
-	read_accel();
+    if (preflight_timer > 0)
+    {
+        read_gyros(); // record the average values for both DCM and for offset measurements
+        filter_gyros();
+        read_accel();
+        preflight_timer = preflight_timer - 1 ;
+        if (preflight_timer == 0)
+        {
+            flight_ready = true ;
+        }
+    }
+    else
+    {
+        read_gyros();
+        read_accel();
+    }
 }
 
 static int16_t omegaSOG(int16_t omega, int16_t speed)
@@ -460,7 +481,14 @@ static void rupdate(void)
 	VectorAdd(3, omegaAccum, omegagyro, omegacorrI);
 	VectorAdd(3, omega, omegaAccum, omegacorrP);
 	//	scale by the integration factors:
-	VectorMultiply(3, theta, omega, ggain); // Scalegain of 2
+    if ( flight_ready == true )
+    {
+        VectorMultiply(3, theta, omegagyro, ggain);
+    }
+    else
+    {    
+        VectorMultiply(3, theta, omega, ggain); // Scalegain of 2
+    }
 	// diagonal elements of the update matrix:
 	rup[0] = rup[4] = rup[8]= RMAX;
 
