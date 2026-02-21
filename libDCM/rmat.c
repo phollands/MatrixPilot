@@ -274,6 +274,28 @@ inline void read_accel(void)
 
 union longww omegagyro_filtered_pass_1[]= { { 0 }, { 0 },  { 0 } } ;
 union longww omegagyro_filtered_pass_2[]= { { 0 }, { 0 },  { 0 } } ;
+union longww omegagyro_offset[]= { { 0 }, { 0 },  { 0 } } ;
+
+#define MAX_OFFSET 100
+
+int16_t saturate_omega( int16_t input )
+{
+    if ( abs(input) < MAX_OFFSET )
+    {
+        return input ;
+    }
+    else
+    {
+       if (input >  MAX_OFFSET)
+       {
+           return MAX_OFFSET ;
+       }
+       else
+       {
+           return - MAX_OFFSET ;
+       }
+    }
+}
 
 
 #define GYRO_FILTER_SHIFT 12
@@ -281,14 +303,26 @@ union longww omegagyro_filtered_pass_2[]= { { 0 }, { 0 },  { 0 } } ;
 void filter_gyros(void)
 {
     union longww accum32 ;
-	accum32._.W1 = omegagyro[0] ;
+	accum32._.W1 = saturate_omega(omegagyro[0]) ;
 	accum32._.W0 = 0 ;
 	omegagyro_filtered_pass_1[0].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_1[0].WW )>>GYRO_FILTER_SHIFT) ;
-	accum32._.W1 = omegagyro[1] ;
+	accum32.WW = accum32.WW - omegagyro_filtered_pass_1[0].WW ; 
+    omegagyro_filtered_pass_2[0].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_2[0].WW )>>GYRO_FILTER_SHIFT) ;
+	omegagyro_offset[0].WW = omegagyro_filtered_pass_1[0].WW + omegagyro_filtered_pass_2[0].WW ;
+    
+    accum32._.W1 = omegagyro[1] ;
 	omegagyro_filtered_pass_1[1].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_1[1].WW )>>GYRO_FILTER_SHIFT) ;
-	accum32._.W1 = omegagyro[2] ;
+	accum32.WW = accum32.WW - omegagyro_filtered_pass_1[1].WW ; 
+    omegagyro_filtered_pass_2[1].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_2[1].WW )>>GYRO_FILTER_SHIFT) ;
+	omegagyro_offset[1].WW = omegagyro_filtered_pass_1[1].WW + omegagyro_filtered_pass_2[1].WW ;
+    
+    accum32._.W1 = omegagyro[2] ;
 	omegagyro_filtered_pass_1[2].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_1[2].WW )>>GYRO_FILTER_SHIFT) ;
-	}
+    accum32.WW = accum32.WW - omegagyro_filtered_pass_1[2].WW ; 
+    omegagyro_filtered_pass_2[2].WW += ((int32_t)(accum32.WW)>>GYRO_FILTER_SHIFT) -((int32_t)(omegagyro_filtered_pass_2[2].WW )>>GYRO_FILTER_SHIFT) ;
+	omegagyro_offset[2].WW = omegagyro_filtered_pass_1[2].WW + omegagyro_filtered_pass_2[2].WW ;
+    
+}
 
 void udb_callback_read_sensors(void)
 {

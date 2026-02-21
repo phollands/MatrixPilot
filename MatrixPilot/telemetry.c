@@ -515,6 +515,8 @@ extern int16_t errorYawplane[];
 extern int16_t omega[], omegaAccum[] , down_vector[] ;
 extern int16_t errorRP_raw[];
 extern union longww omegagyro_filtered_pass_1[];
+extern union longww omegagyro_offset[];
+
 void telemetry_output_10hz(void)
 {
    if (wait_time > 1)
@@ -536,9 +538,9 @@ void telemetry_output_10hz(void)
            rmat[6],rmat[7],rmat[8],                                                       
            omegagyro[0], omegagyro[1], omegagyro[2] ,
                 
-           omegagyro_filtered_pass_1[0]._.W1 ,
-           omegagyro_filtered_pass_1[1]._.W1 ,
-           omegagyro_filtered_pass_1[2]._.W1 , 
+           omegagyro_offset[0]._.W1 ,
+           omegagyro_offset[1]._.W1 ,
+           omegagyro_offset[2]._.W1 , 
                 
                 errorRP_raw[0],
                 errorRP_raw[1],
